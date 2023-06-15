@@ -86,6 +86,14 @@ function M.schedule()
   end)
 end
 
+function M.ColorScheme()
+  if vim.o.termguicolors then
+    vim.api.nvim_command("hi def " .. M.hl_group .. " guifg=#808080 ctermfg=244")
+  else
+    vim.api.nvim_command("hi def " .. M.hl_group .. " guifg=#808080 ctermfg=8")
+  end
+end
+
 function M.suggest()
   local before, after = get_context()
   local before_len = string.len(before)
@@ -161,7 +169,7 @@ function M.setup()
     return
   end
 
-  vim.api.nvim_command("highlight default link " .. M.hl_group .. " Comment")
+  M.ColorScheme()
 
   M.setup_done = true
 end
