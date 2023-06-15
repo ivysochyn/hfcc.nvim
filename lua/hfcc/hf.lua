@@ -24,17 +24,16 @@ local function extract_generation(data)
     vim.notify("[HFcc] " .. decoded_json.error, vim.log.levels.ERROR)
     return ""
   end
-  local raw_generated_text = decoded_json[1].generated_text
+  local raw_generated_text = decoded_json.generated_text
+  if raw_generated_text == nil then
+    vim.notify("[HFcc] Empty generated text", vim.log.levels.ERROR)
+    return ""
+  end
   return raw_generated_text
 end
 
 local function get_url()
-  local model = config.get().model
-  if utils.startswith(model, "http://") or utils.startswith(model, "https://") then
-    return model
-  else
-    return "https://api-inference.huggingface.co/models/" .. model
-  end
+    return "http://127.0.0.1:5000"
 end
 
 local function create_payload(request)
@@ -55,14 +54,10 @@ local function create_payload(request)
 end
 
 M.fetch_suggestion = function(request, callback)
-  local api_token = config.get().api_token
-  if api_token == "" then
-    vim.notify("[HFcc] api token is empty, suggestion might not work", vim.log.levels.WARN)
-  end
   local query =
       'curl "' .. get_url() .. '" \z
+      -X POST \z
       -H "Content-type: application/json" \z
-      -H "Authorization: Bearer ' .. api_token .. '" \z
       -d@/tmp/inputs.json'
   create_payload(request)
   local row, col = utils.get_cursor_pos()
@@ -74,5 +69,4 @@ M.fetch_suggestion = function(request, callback)
     end,
   })
 end
-
 return M
