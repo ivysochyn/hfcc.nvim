@@ -21,7 +21,7 @@ local function parse_response(prefix_len, response)
   local stop_token = config.get().query_params.stop_token
 
   if fim.enabled then
-    local after_fim_mid = utils.string_after_delim(response, "<fim_middle>")
+    local after_fim_mid = utils.string_after_delim(response, fim.middle)
     if after_fim_mid == nil then
       return nil
     end
